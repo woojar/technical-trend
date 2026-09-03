@@ -1,13 +1,23 @@
 name: Pages
 
 on:
-  # Publish whenever a digest lands, which is what the weekly job commits.
+  # Manual commits to digests/ (or changes to the generator) publish directly.
   push:
     branches: [main]
     paths:
       - "digests/**"
       - "src/trend/site.py"
       - ".github/workflows/pages.yml"
+
+  # The weekly job's own commit does NOT raise a push event: GitHub suppresses
+  # triggers for pushes authenticated with the default GITHUB_TOKEN so that a
+  # workflow cannot retrigger itself. Without this hook the site would silently
+  # stop updating after the first deploy.
+  workflow_run:
+    workflows: ["Weekly digest"]
+    types: [completed]
+    branches: [main]
+
   workflow_dispatch:
 
 # Required by actions/deploy-pages: it mints an OIDC token rather than using a
@@ -25,8 +35,17 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Do not publish off a failed digest run.
+    if: >-
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
     steps:
+      # For a workflow_run event the default checkout ref is the commit that
+      # started the triggering run, which predates the digest it committed.
+      # Ask for the branch tip explicitly so the new issue is included.
       - uses: actions/checkout@v4
+        with:
+          ref: main
 
       - uses: astral-sh/setup-uv@v5
         with:

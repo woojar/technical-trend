@@ -125,12 +125,23 @@ as secrets. Without them the `--notify` flag is a no-op.
 ## Publishing to GitHub Pages
 
 [`.github/workflows/pages.yml`](.github/workflows/pages.yml) turns the committed
-digests into a static site and deploys it. It runs whenever something lands in
-`digests/`, so publishing follows automatically from the weekly commit.
+digests into a static site and deploys it.
+
+It is chained to the weekly job by a `workflow_run` trigger rather than by the
+digest commit itself. That indirection is necessary: GitHub suppresses workflow
+triggers for pushes authenticated with the default `GITHUB_TOKEN`, so the commit
+made by `weekly.yml` raises no `push` event, and a deploy keyed only on `push`
+would fire once and then never again. The `push` trigger is kept for digests you
+commit by hand, and `workflow_dispatch` lets you redeploy on demand.
+
+Because a `workflow_run` job would otherwise check out the commit that *started*
+the weekly run — which predates the digest it wrote — the checkout pins `ref:
+main` to pick up the new issue.
 
 To enable it, set **Settings → Pages → Build and deployment → Source** to
-**GitHub Actions**. Nothing else is required: deployment uses the workflow's OIDC
-token, so there is no secret to add.
+**GitHub Actions**. Ignore the "Jekyll" and "Static HTML" starter cards; they
+would commit a second, competing workflow. Nothing else is required: deployment
+uses the workflow's OIDC token, so there is no secret to add.
 
 Build it locally to see what will be published:
 

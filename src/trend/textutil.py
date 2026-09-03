@@ -51,3 +51,42 @@ def excerpt(raw: str, limit: int) -> str:
         return text
     clipped = text[: max(limit - 3, 0)].rsplit(" ", 1)[0].rstrip(" ,;:.")
     return f"{clipped}..." if clipped else text[:limit]
+
+
+#: Credential shapes worth scrubbing from anything we log. Not exhaustive by
+#: design -- the exact key is redacted separately, and this only has to catch a
+#: provider echoing something we did not send.
+_SECRET_PATTERNS = (
+    re.compile(r"AIza[0-9A-Za-z_-]{16,}"),  # Google API keys
+    re.compile(r"AQ\.[0-9A-Za-z_-]{16,}"),  # newer Google credential format
+    re.compile(r"\b(?:gsk|sk|csk|xoxb|xoxp|ghp|gho|github_pat)[-_][0-9A-Za-z_-]{16,}"),
+    re.compile(r"(?i)bearer\s+[0-9A-Za-z._-]{16,}"),
+)
+
+REDACTED = "[REDACTED]"
+
+
+def redact(text: str, *secrets: str) -> str:
+    """Strip credentials out of text destined for a log.
+
+    Provider error bodies are echoed into log messages to make failures
+    diagnosable, and GitHub Actions logs are world-readable on a public
+    repository. Actions masks values it knows are secrets, but that does not
+    cover a local run, so scrub here too rather than relying on it.
+
+    Known secret values are removed first because that is exact; the patterns
+    are a fallback for a credential we never sent but which appears anyway.
+    """
+    if not text:
+        return text
+
+    for secret in secrets:
+        # Ignore trivially short values: replacing them would mangle the message
+        # and tell an attacker nothing useful anyway.
+        if secret and len(secret) >= 8:
+            text = text.replace(secret, REDACTED)
+
+    for pattern in _SECRET_PATTERNS:
+        text = pattern.sub(REDACTED, text)
+
+    return text

@@ -25,6 +25,7 @@ from trend.llm.base import (
     Unavailable,
     Unreachable,
 )
+from trend.textutil import redact
 
 log = logging.getLogger(__name__)
 
@@ -97,13 +98,17 @@ class GeminiProvider:
             raise Unavailable(f"{self.name}: {exc}") from exc
 
         if resp.status_code == 429:
-            raise RateLimited(f"{self.name}: quota exhausted ({_snippet(resp)})")
+            raise RateLimited(f"{self.name}: quota exhausted ({_snippet(resp, self.api_key)})")
         if resp.status_code in (401, 403):
-            raise NotConfigured(f"{self.name}: auth rejected ({_snippet(resp)})")
+            raise NotConfigured(f"{self.name}: auth rejected ({_snippet(resp, self.api_key)})")
         if resp.status_code >= 500:
-            raise Unavailable(f"{self.name}: HTTP {resp.status_code} ({_snippet(resp)})")
+            raise Unavailable(
+                f"{self.name}: HTTP {resp.status_code} ({_snippet(resp, self.api_key)})"
+            )
         if resp.status_code >= 400:
-            raise BadResponse(f"{self.name}: HTTP {resp.status_code} ({_snippet(resp)})")
+            raise BadResponse(
+                f"{self.name}: HTTP {resp.status_code} ({_snippet(resp, self.api_key)})"
+            )
 
         try:
             data = resp.json()
@@ -115,7 +120,9 @@ class GeminiProvider:
             parts = (candidates[0].get("content") or {}).get("parts") or []
             text = "".join(p.get("text", "") for p in parts)
         except (ValueError, AttributeError, IndexError, TypeError) as exc:
-            raise BadResponse(f"{self.name}: unexpected payload ({_snippet(resp)})") from exc
+            raise BadResponse(
+                f"{self.name}: unexpected payload ({_snippet(resp, self.api_key)})"
+            ) from exc
 
         if not text.strip():
             raise BadResponse(f"{self.name}: empty completion")
@@ -123,13 +130,15 @@ class GeminiProvider:
         return Completion(text=text.strip(), provider=self.name, model=self.model)
 
 
-def _snippet(resp: requests.Response, limit: int = 160) -> str:
-    """Compact one-line form of an error body, for logging.
+def _snippet(resp: requests.Response, secret: str = "", limit: int = 160) -> str:
+    """Compact, credential-free one-line form of an error body, for logging.
 
     Provider errors arrive as pretty-printed JSON; collapsing the whitespace
-    keeps a failover notice on one readable log line.
+    keeps a failover notice on one readable log line. ``secret`` is scrubbed
+    because these messages reach logs, and Actions logs are world-readable on a
+    public repository.
     """
     try:
-        return " ".join(resp.text.split())[:limit]
+        return redact(" ".join(resp.text.split()), secret)[:limit]
     except Exception:  # pragma: no cover - defensive
         return "<unreadable>"

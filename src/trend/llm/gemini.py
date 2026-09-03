@@ -23,6 +23,7 @@ from trend.llm.base import (
     NotConfigured,
     RateLimited,
     Unavailable,
+    Unreachable,
 )
 
 log = logging.getLogger(__name__)
@@ -88,6 +89,10 @@ class GeminiProvider:
                 },
                 timeout=self.timeout,
             )
+        except requests.Timeout as exc:
+            raise Unavailable(f"{self.name}: timed out after {self.timeout}s") from exc
+        except requests.ConnectionError as exc:
+            raise Unreachable(f"{self.name}: cannot reach {self.base_url}") from exc
         except requests.RequestException as exc:
             raise Unavailable(f"{self.name}: {exc}") from exc
 
@@ -118,8 +123,13 @@ class GeminiProvider:
         return Completion(text=text.strip(), provider=self.name, model=self.model)
 
 
-def _snippet(resp: requests.Response, limit: int = 200) -> str:
+def _snippet(resp: requests.Response, limit: int = 160) -> str:
+    """Compact one-line form of an error body, for logging.
+
+    Provider errors arrive as pretty-printed JSON; collapsing the whitespace
+    keeps a failover notice on one readable log line.
+    """
     try:
-        return resp.text[:limit].replace("\n", " ")
+        return " ".join(resp.text.split())[:limit]
     except Exception:  # pragma: no cover - defensive
         return "<unreadable>"

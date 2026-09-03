@@ -11,6 +11,7 @@ from trend.llm.base import (
     NotConfigured,
     RateLimited,
     Unavailable,
+    Unreachable,
 )
 from trend.llm.router import Router, build_provider, parse_json_loose
 
@@ -32,34 +33,135 @@ def test_unconfigured_providers_are_skipped() -> None:
     assert a.calls == 0
 
 
-def test_rate_limit_fails_over_without_retrying() -> None:
-    """A free-tier 429 means hours of waiting; retrying the same provider is waste."""
-    a = FakeProvider("a", [RateLimited("quota gone"), "would work later"])
-    b = FakeProvider("b", ["from b"])
-    router = Router([a, b])
-    assert router.complete("s", "u").provider == "b"
-    assert a.calls == 1
+def test_transient_error_fails_over_before_retrying(monkeypatch) -> None:
+    """A healthy provider beats waiting on an overloaded one.
 
-
-def test_transient_error_is_retried_once_on_same_provider(monkeypatch) -> None:
+    Failover is instant while a retry costs a sleep, so the first pass must move
+    on rather than retry in place -- the common case on a contended free tier.
+    """
     monkeypatch.setattr("trend.llm.router.time.sleep", lambda _: None)
     a = FakeProvider("a", [Unavailable("503"), "recovered"])
     b = FakeProvider("b", ["from b"])
     router = Router([a, b])
     result = router.complete("s", "u")
+    assert result.provider == "b"
+    assert a.calls == 1  # not retried while b was still untried
+    assert b.calls == 1
+
+
+def test_transient_error_retried_only_after_all_providers_fail(monkeypatch) -> None:
+    sleeps: list[float] = []
+    monkeypatch.setattr("trend.llm.router.time.sleep", sleeps.append)
+    a = FakeProvider("a", [Unavailable("503"), "recovered"])
+    b = FakeProvider("b", [Unavailable("also down"), Unavailable("still down")])
+    router = Router([a, b])
+
+    result = router.complete("s", "u")
     assert result.provider == "a"
     assert result.text == "recovered"
     assert a.calls == 2
-    assert b.calls == 0
+    # One sleep, paid once for the whole request rather than per provider.
+    assert len(sleeps) == 1
 
 
-def test_transient_error_fails_over_after_one_retry(monkeypatch) -> None:
+def test_rate_limited_provider_is_never_retried(monkeypatch) -> None:
+    """A free-tier 429 resets in hours, so a second attempt is pure waste."""
     monkeypatch.setattr("trend.llm.router.time.sleep", lambda _: None)
-    a = FakeProvider("a", [Unavailable("503"), Unavailable("503 again")])
+    a = FakeProvider("a", [RateLimited("quota gone"), "would work"])
+    b = FakeProvider("b", [Unavailable("down"), "recovered"])
+    router = Router([a, b])
+
+    assert router.complete("s", "u").provider == "b"
+    assert a.calls == 1
+
+
+def test_rate_limited_provider_is_dropped_for_the_rest_of_the_run() -> None:
+    """A digest makes several batched calls; re-asking an exhausted free tier on
+    each one is several wasted round-trips and a wall of duplicate log lines."""
+    a = FakeProvider("a", [RateLimited("daily quota gone"), "would work"])
+    b = FakeProvider("b", ["first", "second", "third"])
+    router = Router([a, b])
+
+    for _ in range(3):
+        assert router.complete("s", "u").provider == "b"
+
+    assert a.calls == 1  # asked once, then skipped
+    assert b.calls == 3
+
+
+def test_exhausting_every_provider_reports_it_clearly() -> None:
+    a = FakeProvider("a", [RateLimited("quota gone")])
+    router = Router([a])
+
+    # First call surfaces the underlying provider error.
+    with pytest.raises(LLMError, match="quota gone"):
+        router.complete("s", "u")
+    # Later calls must not re-ask, and must say why they gave up.
+    with pytest.raises(LLMError, match="every provider was written off"):
+        router.complete("s", "u")
+    assert a.calls == 1
+
+
+def test_has_available_reflects_exhausted_quota() -> None:
+    """summarize() uses this to choose the heuristic path, so it must go False."""
+    router = Router([FakeProvider("a", [RateLimited("quota gone")])])
+    assert router.has_available is True
+    with pytest.raises(LLMError):
+        router.complete("s", "u")
+    assert router.has_available is False
+
+
+def test_bad_response_does_not_exhaust_a_provider() -> None:
+    """Only rate limits are sticky; a malformed reply may not recur."""
+    a = FakeProvider("a", [BadResponse("bad json"), "recovered"])
     b = FakeProvider("b", ["from b"])
     router = Router([a, b])
+
     assert router.complete("s", "u").provider == "b"
+    assert router.complete("s", "u").provider == "a"
     assert a.calls == 2
+
+
+def test_unreachable_endpoint_is_dropped_for_the_rest_of_the_run() -> None:
+    """A refused socket will be refused again on every later batch.
+
+    Distinguished from a slow server: a local Ollama that is not running should
+    cost one failed attempt per run, not one per batch.
+    """
+    dead = FakeProvider("ollama", [Unreachable("cannot reach localhost:11434")] * 5)
+    live = FakeProvider("b", ["first", "second", "third"])
+    router = Router([dead, live])
+
+    for _ in range(3):
+        assert router.complete("s", "u").provider == "b"
+
+    assert dead.calls == 1
+
+
+def test_timeout_is_not_sticky(monkeypatch) -> None:
+    """A slow server is still there, so it keeps its place in the chain."""
+    monkeypatch.setattr("trend.llm.router.time.sleep", lambda _: None)
+    slow = FakeProvider("slow", [Unavailable("timed out"), "recovered"])
+    other = FakeProvider("other", ["from other", Unavailable("down")])
+    router = Router([slow, other])
+
+    assert router.complete("s", "u").provider == "other"
+    # slow was not written off, so it is asked again on the next call.
+    assert router.complete("s", "u").provider == "slow"
+    assert slow.calls == 2
+
+
+def test_write_off_reasons_are_reported() -> None:
+    router = Router(
+        [
+            FakeProvider("a", [RateLimited("quota gone")]),
+            FakeProvider("b", [Unreachable("no socket")]),
+        ]
+    )
+    with pytest.raises(LLMError):
+        router.complete("s", "u")
+    with pytest.raises(LLMError, match=r"a \(rate limited\), b \(unreachable\)"):
+        router.complete("s", "u")
 
 
 def test_bad_response_fails_over() -> None:
@@ -81,6 +183,12 @@ def test_all_providers_failing_raises_with_context() -> None:
         Router([a, b]).complete("s", "u")
     assert "a limited" in str(exc.value)
     assert "b limited" in str(exc.value)
+
+
+def test_no_configured_provider_raises_immediately() -> None:
+    router = Router([FakeProvider("a", ["never"], configured=False)])
+    with pytest.raises(LLMError, match="no provider is configured"):
+        router.complete("s", "u")
 
 
 def test_has_available_reflects_configuration() -> None:

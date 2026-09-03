@@ -28,6 +28,16 @@ class Unavailable(LLMError):
     """Transient server-side or network failure. Worth one retry."""
 
 
+class Unreachable(Unavailable):
+    """The endpoint could not be contacted at all.
+
+    Distinguished from :class:`Unavailable` because it is not transient within a
+    single run: a refused connection to a local Ollama that is not running will
+    be refused again on every later batch. The router drops such a provider for
+    the remainder of the run instead of retrying it each time.
+    """
+
+
 class BadResponse(LLMError):
     """The provider replied but the payload was unusable."""
 

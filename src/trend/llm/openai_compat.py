@@ -20,6 +20,7 @@ from trend.llm.base import (
     NotConfigured,
     RateLimited,
     Unavailable,
+    Unreachable,
 )
 
 log = logging.getLogger(__name__)
@@ -83,6 +84,12 @@ class OpenAICompatProvider:
         url = f"{self.base_url}/chat/completions"
         try:
             resp = self._session.post(url, json=payload, headers=headers, timeout=self.timeout)
+        except requests.Timeout as exc:
+            # The server is there but slow; a retry may well succeed.
+            raise Unavailable(f"{self.name}: timed out after {self.timeout}s") from exc
+        except requests.ConnectionError as exc:
+            # Nothing is listening. This will not change mid-run.
+            raise Unreachable(f"{self.name}: cannot reach {self.base_url}") from exc
         except requests.RequestException as exc:
             raise Unavailable(f"{self.name}: {exc}") from exc
 
@@ -109,8 +116,9 @@ class OpenAICompatProvider:
         return Completion(text=text.strip(), provider=self.name, model=self.model)
 
 
-def _snippet(resp: requests.Response, limit: int = 200) -> str:
+def _snippet(resp: requests.Response, limit: int = 160) -> str:
+    """Compact one-line form of an error body, for logging."""
     try:
-        return resp.text[:limit].replace("\n", " ")
+        return " ".join(resp.text.split())[:limit]
     except Exception:  # pragma: no cover - defensive
         return "<unreadable>"

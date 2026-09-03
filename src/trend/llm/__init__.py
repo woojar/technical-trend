@@ -10,6 +10,7 @@ from trend.llm.base import (
     Provider,
     RateLimited,
     Unavailable,
+    Unreachable,
 )
 from trend.llm.gemini import GeminiProvider
 from trend.llm.openai_compat import OpenAICompatProvider
@@ -26,6 +27,7 @@ __all__ = [
     "RateLimited",
     "Router",
     "Unavailable",
+    "Unreachable",
     "build_provider",
     "parse_json_loose",
 ]

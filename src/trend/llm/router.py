@@ -31,11 +31,16 @@ from trend.llm.base import (
     Provider,
     RateLimited,
     Unavailable,
+    Unreachable,
 )
 from trend.llm.gemini import GeminiProvider
 from trend.llm.openai_compat import OpenAICompatProvider
 
 log = logging.getLogger(__name__)
+
+#: Pause before the second pass. Only paid once per request, after every
+#: provider has already been tried.
+RETRY_DELAY_SECONDS = 2.0
 
 
 def build_provider(
@@ -83,6 +88,12 @@ class Router:
         self.providers = providers
         #: Name of the provider that served the most recent successful call.
         self.last_used: str = ""
+        #: Providers written off for the remainder of this run, mapped to why.
+        #: Two failures do not heal mid-run: a free-tier quota resets in hours,
+        #: and an endpoint with nothing listening stays that way. A digest makes
+        #: several batched calls, so re-asking on each one is wasted round-trips
+        #: and a wall of duplicate log lines.
+        self._skip: dict[str, str] = {}
 
     @classmethod
     def from_config(
@@ -97,43 +108,85 @@ class Router:
 
     @property
     def has_available(self) -> bool:
-        return any(p.available() for p in self.providers)
+        """True when some provider still has credentials and has not been written off."""
+        return any(p.available() and p.name not in self._skip for p in self.providers)
 
     def complete(self, system: str, user: str, *, json_mode: bool = False) -> Completion:
+        """Ask each configured provider in turn until one answers.
+
+        Two passes. The first gives every provider one attempt; only if all of
+        them fail does the second retry the ones whose failure looked transient.
+        Failing over is instant while a retry costs a sleep, so trying a healthy
+        provider always beats waiting on an overloaded one -- which is the common
+        case when a free tier is contended.
+        """
+        available = [p for p in self.providers if p.available() and p.name not in self._skip]
+        if not available:
+            if self._skip:
+                detail = ", ".join(f"{n} ({r})" for n, r in sorted(self._skip.items()))
+                raise LLMError(f"every provider was written off this run: {detail}")
+            raise LLMError("no provider is configured")
+
         errors: list[str] = []
+        retryable: list[Provider] = []
 
-        for provider in self.providers:
-            if not provider.available():
-                log.debug("llm: %s not configured, skipping", provider.name)
-                continue
+        for provider in available:
+            result = self._attempt(provider, system, user, json_mode, errors, retryable)
+            if result is not None:
+                return result
 
-            for attempt in (1, 2):
-                try:
-                    result = provider.complete(system, user, json_mode=json_mode)
-                except NotConfigured as exc:
-                    errors.append(str(exc))
-                    break
-                except RateLimited as exc:
-                    log.warning("llm: %s rate limited, failing over", provider.name)
-                    errors.append(str(exc))
-                    break
-                except Unavailable as exc:
-                    if attempt == 1:
-                        log.info("llm: %s unavailable, retrying once: %s", provider.name, exc)
-                        time.sleep(2.0)
-                        continue
-                    errors.append(str(exc))
-                    break
-                except (BadResponse, LLMError) as exc:
-                    errors.append(str(exc))
-                    break
-                else:
-                    if attempt > 1 or provider.name != self.last_used:
-                        log.info("llm: using %s (%s)", provider.name, provider.model)
-                    self.last_used = provider.name
-                    return result
+        # Every provider failed. Give the transient failures one more chance
+        # rather than dropping straight to the heuristic fallback.
+        for provider in retryable:
+            log.info("llm: all providers failed; retrying %s", provider.name)
+            time.sleep(RETRY_DELAY_SECONDS)
+            result = self._attempt(provider, system, user, json_mode, errors, None)
+            if result is not None:
+                return result
 
-        raise LLMError("all providers failed: " + "; ".join(errors) if errors else "no providers")
+        raise LLMError("all providers failed: " + "; ".join(errors))
+
+    def _attempt(
+        self,
+        provider: Provider,
+        system: str,
+        user: str,
+        json_mode: bool,
+        errors: list[str],
+        retryable: list[Provider] | None,
+    ) -> Completion | None:
+        """One call. Returns ``None`` on failure, recording why."""
+        try:
+            result = provider.complete(system, user, json_mode=json_mode)
+        except RateLimited as exc:
+            # A free-tier window is hours long, so drop this provider for the
+            # rest of the run rather than re-asking on every later batch.
+            self._write_off(provider, "rate limited", errors, exc)
+        except Unreachable as exc:
+            # Nothing is listening; it will not start listening mid-run.
+            self._write_off(provider, "unreachable", errors, exc)
+        except Unavailable as exc:
+            log.info("llm: %s unavailable, moving on: %s", provider.name, exc)
+            errors.append(str(exc))
+            if retryable is not None:
+                retryable.append(provider)
+        except (NotConfigured, BadResponse, LLMError) as exc:
+            log.info("llm: %s failed, moving on: %s", provider.name, exc)
+            errors.append(str(exc))
+        else:
+            if provider.name != self.last_used:
+                log.info("llm: using %s (%s)", provider.name, provider.model)
+            self.last_used = provider.name
+            return result
+        return None
+
+    def _write_off(
+        self, provider: Provider, reason: str, errors: list[str], exc: Exception
+    ) -> None:
+        """Record a failure that will not resolve during this run."""
+        log.info("llm: %s %s, skipping it for the rest of the run", provider.name, reason)
+        self._skip[provider.name] = reason
+        errors.append(str(exc))
 
     def complete_json(self, system: str, user: str) -> Any:
         """Complete and parse JSON, tolerating the usual model sloppiness."""

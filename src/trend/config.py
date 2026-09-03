@@ -26,20 +26,20 @@ DEFAULT_CATEGORIES = [
 # Free-tier-friendly defaults. Each entry names a provider implementation, the
 # model to ask for, and the environment variable holding the key.
 #
-# Model slugs are the fragile part: providers retire dated slugs without notice,
-# so the first entry uses Google's "-latest" alias, which tracks the current
-# Flash model and cannot go stale. The second pins a known-good dated slug in
-# case the alias target is temporarily overloaded.
+# A dated Gemini slug leads and the "-latest" alias backs it up. The alias never
+# goes stale, but it resolves to the newest model, whose free-tier quota is
+# heavily contended (measured at one request before HTTP 429), so it makes a poor
+# primary and a good safety net for the day the dated slug is retired.
 DEFAULT_LLM_CHAIN: list[dict[str, Any]] = [
     {
         "provider": "gemini",
-        "model": "gemini-flash-latest",
+        "model": "gemini-3.6-flash",
         "api_key_env": "GEMINI_API_KEY",
     },
     {
         "provider": "gemini",
-        "name": "gemini-pinned",
-        "model": "gemini-3.6-flash",
+        "name": "gemini-latest",
+        "model": "gemini-flash-latest",
         "api_key_env": "GEMINI_API_KEY",
     },
     {

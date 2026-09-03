@@ -13,3 +13,6 @@ dist/
 # Secrets and local state
 .env
 state.db
+
+# Generated static site (rebuilt by the Pages workflow)
+site/

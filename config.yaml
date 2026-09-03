@@ -77,11 +77,11 @@ llm:
 
     # Last resort: fully local, no key, no quota. Requires `ollama serve` and
     # `ollama pull qwen2.5:7b-instruct`. A 7B model handles summarization fine.
-    - provider: openai_compat
-      name: ollama
-      base_url: http://localhost:11434/v1
-      model: qwen2.5:7b-instruct
-      api_key_env: ""
+    # - provider: openai_compat
+    #   name: ollama
+    #   base_url: http://localhost:11434/v1
+    #   model: qwen2.5:7b-instruct
+    #   api_key_env: ""
 
 sources:
   hackernews:

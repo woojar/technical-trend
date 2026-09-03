@@ -18,6 +18,11 @@ dev = [
     "pytest>=8.3.3",
     "ruff>=0.8.0",
 ]
+# Only needed to build the GitHub Pages site. Kept out of the runtime
+# dependencies so a weekly digest run installs three packages, not four.
+docs = [
+    "markdown>=3.7",
+]
 
 [build-system]
 requires = ["hatchling"]

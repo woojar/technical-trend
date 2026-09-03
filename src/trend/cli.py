@@ -23,6 +23,7 @@ from trend.notify import notify
 from trend.pipeline import build_digest, fetch_items, write_digest
 from trend.rank import score_clusters
 from trend.render import source_label
+from trend.site import build_feed, build_site, discover_issues
 from trend.sources import source_weights
 
 log = logging.getLogger("trend")
@@ -125,6 +126,31 @@ def cmd_providers(args: argparse.Namespace) -> int:
             print(f"  FAILED: {exc}")
             return 1
         print(f"  {completion.provider} ({completion.model}) responded: {completion.text[:60]!r}")
+        # A probe sends a handful of tokens. Free tiers meter tokens per day as
+        # well as requests, so a healthy probe does not prove a full digest will
+        # get through -- the batch prompts are orders of magnitude larger.
+        print("  Note: this is a tiny request. A pass here does not guarantee")
+        print("  enough remaining quota for a full run.")
+    return 0
+
+
+def cmd_site(args: argparse.Namespace) -> int:
+    """Build the static site from the digests already committed to the repo."""
+    cfg = load_config(args.config, root=args.root)
+    out_dir = args.out if args.out.is_absolute() else (args.root or Path.cwd()) / args.out
+
+    issues = discover_issues(cfg.output_dir)
+    if not issues:
+        log.error("no issues found in %s; run 'trend weekly' first", cfg.output_dir)
+        return 1
+
+    written = build_site(issues, out_dir)
+    feed = build_feed(issues, out_dir, args.base_url)
+    if feed is not None:
+        written.append(feed)
+
+    print(f"Built {len(issues)} issue(s) into {out_dir} ({len(written)} files)")
+    print(f"Preview: python -m http.server -d {out_dir} 8000")
     return 0
 
 
@@ -161,6 +187,18 @@ def build_parser() -> argparse.ArgumentParser:
     providers = sub.add_parser("providers", help="show LLM provider status")
     providers.add_argument("--probe", action="store_true", help="send a one-token test request")
     providers.set_defaults(func=cmd_providers)
+
+    site = sub.add_parser("site", help="build the static site for GitHub Pages")
+    site.add_argument(
+        "--out", type=Path, default=Path("site"), help="output directory (default: site/)"
+    )
+    site.add_argument(
+        "--base-url",
+        default="",
+        help="public site URL, e.g. https://woojar.github.io/technical-trend "
+        "(needed only to emit feed.xml, whose links must be absolute)",
+    )
+    site.set_defaults(func=cmd_site)
 
     return parser
 

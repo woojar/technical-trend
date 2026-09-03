@@ -16,7 +16,9 @@ jobs:
           enable-cache: true
           cache-dependency-glob: uv.lock
 
-      - run: uv sync --frozen
+      # Include the docs group so the site generator's tests actually run here
+      # rather than skipping.
+      - run: uv sync --frozen --group docs
 
       - run: uv run ruff check .
 

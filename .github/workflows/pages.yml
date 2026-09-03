@@ -1,0 +1,60 @@
+name: Pages
+
+on:
+  # Publish whenever a digest lands, which is what the weekly job commits.
+  push:
+    branches: [main]
+    paths:
+      - "digests/**"
+      - "src/trend/site.py"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+# Required by actions/deploy-pages: it mints an OIDC token rather than using a
+# long-lived secret.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never let two deploys race; the newer one always wins.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      # The site generator needs the docs group; nothing else here does.
+      - name: Install dependencies
+        run: uv sync --frozen --group docs
+
+      - uses: actions/configure-pages@v5
+        id: pages
+
+      # base_url comes from configure-pages so feed.xml gets absolute links
+      # without the URL being hardcoded anywhere.
+      - name: Build site
+        run: uv run trend site --out site --base-url "${{ steps.pages.outputs.base_url }}"
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

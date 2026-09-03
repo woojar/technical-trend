@@ -1,0 +1,44 @@
+[project]
+name = "technical-trend"
+version = "0.1.0"
+description = "Weekly technical trend/news digest assistant powered by free LLM providers"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "requests>=2.32.3",
+    "feedparser>=6.0.11",
+    "PyYAML>=6.0.2",
+]
+
+[project.scripts]
+trend = "trend.cli:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.3",
+    "ruff>=0.8.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/trend"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "C4", "RUF"]
+
+[tool.ruff.lint.isort]
+# conftest is imported directly by tests, so treat it as local rather than
+# third-party or isort splits it into its own block on every test file.
+known-first-party = ["trend", "conftest"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

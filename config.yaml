@@ -1,0 +1,115 @@
+# Weekly technical trend digest configuration.
+# Secrets never belong here -- keys are read from the environment or .env.
+
+window_days: 7          # how far back a "week" reaches
+max_entries: 30          # hard cap on stories sent to the LLM
+max_per_category: 6      # keeps one hot topic from swamping the issue
+dedupe_threshold: 0.6    # title similarity to merge stories; lower merges more
+skip_seen: true          # suppress stories already published in an earlier digest
+
+output_dir: digests
+state_db: state.db
+
+# Order here is the order sections appear in the digest. The model is only
+# allowed to choose from this list; anything else is reassigned by keyword.
+categories:
+  - AI & Machine Learning
+  - Languages & Runtimes
+  - Infrastructure & Cloud
+  - Developer Tools
+  - Security
+  - Research
+  - Industry & Community
+
+llm:
+  # Items per request. Batching is what keeps a run inside free-tier
+  # requests-per-day limits: 30 items becomes 3 calls, not 30.
+  batch_size: 12
+
+  # Tried in order; the first provider with credentials that answers wins.
+  # Delete or reorder freely -- unconfigured entries are skipped silently.
+  chain:
+    # Best free tier of the hosted options, and Flash is plenty for this task.
+    # Key: https://aistudio.google.com/apikey
+    - provider: gemini
+      model: gemini-2.0-flash
+      api_key_env: GEMINI_API_KEY
+
+    # Very fast, generous free tier. https://console.groq.com/keys
+    - provider: openai_compat
+      name: groq
+      base_url: https://api.groq.com/openai/v1
+      model: llama-3.3-70b-versatile
+      api_key_env: GROQ_API_KEY
+
+    # Aggregator with genuinely free model slugs (the ":free" suffix).
+    # https://openrouter.ai/keys
+    - provider: openai_compat
+      name: openrouter
+      base_url: https://openrouter.ai/api/v1
+      model: meta-llama/llama-3.3-70b-instruct:free
+      api_key_env: OPENROUTER_API_KEY
+
+    # https://cloud.cerebras.ai
+    - provider: openai_compat
+      name: cerebras
+      base_url: https://api.cerebras.ai/v1
+      model: llama-3.3-70b
+      api_key_env: CEREBRAS_API_KEY
+
+    # Last resort: fully local, no key, no quota. Requires `ollama serve` and
+    # `ollama pull qwen2.5:7b-instruct`. A 7B model handles summarization fine.
+    - provider: openai_compat
+      name: ollama
+      base_url: http://localhost:11434/v1
+      model: qwen2.5:7b-instruct
+      api_key_env: ""
+
+sources:
+  hackernews:
+    enabled: true
+    min_points: 100      # raise to cut noise, lower for more coverage
+    limit: 150
+
+  github:
+    enabled: true
+    created_within_days: 90   # new repos need time to accumulate stars
+    min_stars: 150
+    per_query: 25
+    # One extra query per language, so a good Rust crate is not buried.
+    languages:
+      - python
+      - rust
+      - typescript
+      - go
+
+  arxiv:
+    enabled: true
+    per_category: 15
+    categories:
+      - cs.AI
+      - cs.LG
+      - cs.SE
+      - cs.DC
+      - cs.CR
+
+  rss:
+    enabled: true
+    per_feed: 10
+    feeds:
+      - name: Lobsters
+        url: https://lobste.rs/rss
+      - name: Cloudflare Blog
+        url: https://blog.cloudflare.com/rss/
+      - name: GitHub Engineering
+        url: https://github.blog/engineering/feed/
+      - name: Netflix Tech Blog
+        url: https://netflixtechblog.com/feed
+      - name: Go Blog
+        url: https://go.dev/blog/feed.atom
+      - name: Rust Blog
+        url: https://blog.rust-lang.org/feed.xml
+      - name: Python Insider
+        url: https://blog.python.org/feeds/posts/default
+      # RSSHub (https://docs.rsshub.app) can turn almost any site into a feed
+      # if something you want has no native RSS.

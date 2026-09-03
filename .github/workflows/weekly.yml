@@ -1,0 +1,93 @@
+name: Weekly digest
+
+on:
+  schedule:
+    # Mondays 06:00 UTC. GitHub queues cron jobs under load, so treat the time
+    # as approximate.
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Build the digest but do not commit it"
+        type: boolean
+        default: false
+
+# Needed to push the generated digest back to the repository.
+permissions:
+  contents: write
+
+concurrency:
+  group: weekly-digest
+  cancel-in-progress: false
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      # --frozen fails if uv.lock is stale rather than silently resolving
+      # something new, which is what you want for an unattended job.
+      - name: Install dependencies
+        run: uv sync --frozen --no-dev
+
+      # state.db records which stories were already published. Restoring it
+      # keeps a story that stays popular for two weeks out of two digests.
+      - name: Restore seen-item state
+        uses: actions/cache/restore@v4
+        with:
+          path: state.db
+          key: trend-state-${{ github.run_id }}
+          restore-keys: trend-state-
+
+      - name: Generate digest
+        env:
+          # Set whichever you have in Settings > Secrets and variables > Actions.
+          # Missing keys are skipped; with none set the digest still builds from
+          # headlines and excerpts.
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
+          # Automatic token; raises the GitHub Search API rate limit.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: uv run trend weekly --notify
+
+      - name: Save seen-item state
+        uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: state.db
+          key: trend-state-${{ github.run_id }}
+
+      - name: Commit digest
+        if: ${{ !inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add digests
+          if git diff --cached --quiet; then
+            echo "No digest changes to commit."
+            exit 0
+          fi
+          git commit -m "digest: $(date -u +%G-W%V)"
+          git push
+
+      - name: Upload digest artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: digest
+          path: digests/
+          if-no-files-found: warn

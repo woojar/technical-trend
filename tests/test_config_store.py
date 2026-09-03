@@ -22,7 +22,7 @@ llm:
   batch_size: 4
   chain:
     - provider: gemini
-      model: gemini-2.0-flash
+      model: gemini-flash-latest
       api_key_env: GEMINI_API_KEY
 sources:
   hackernews:

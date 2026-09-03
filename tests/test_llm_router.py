@@ -139,11 +139,11 @@ def test_unparseable_response_raises() -> None:
 
 def test_build_gemini_provider() -> None:
     provider = build_provider(
-        {"provider": "gemini", "model": "gemini-2.0-flash", "api_key_env": "X_KEY"}
+        {"provider": "gemini", "model": "gemini-flash-latest", "api_key_env": "X_KEY"}
     )
     assert provider is not None
     assert provider.name == "gemini"
-    assert provider.model == "gemini-2.0-flash"
+    assert provider.model == "gemini-flash-latest"
 
 
 def test_build_openai_compat_provider() -> None:
@@ -198,7 +198,7 @@ def test_invalid_specs_are_skipped(spec: dict) -> None:
 def test_from_config_drops_invalid_entries() -> None:
     router = Router.from_config(
         [
-            {"provider": "gemini", "model": "gemini-2.0-flash", "api_key_env": "K"},
+            {"provider": "gemini", "model": "gemini-flash-latest", "api_key_env": "K"},
             {"provider": "bogus", "model": "m"},
         ]
     )

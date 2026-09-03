@@ -34,7 +34,7 @@ class GeminiProvider:
     def __init__(
         self,
         *,
-        model: str = "gemini-2.0-flash",
+        model: str = "gemini-flash-latest",
         api_key_env: str = "GEMINI_API_KEY",
         base_url: str = DEFAULT_BASE,
         session: requests.Session | None = None,

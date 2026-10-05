@@ -1,133 +1,148 @@
-# Tech Trends — 2026-W40
+# Tech Trends — 2026-W41
 
-*2026-09-21 to 2026-09-28 · 18 stories*
+*2026-09-28 to 2026-10-05 · 18 stories*
 
 ## Contents
 
-- [AI & Machine Learning](#ai--machine-learning) (5)
-- [Languages & Runtimes](#languages--runtimes) (3)
-- [Developer Tools](#developer-tools) (3)
-- [Security](#security) (1)
+- [AI & Machine Learning](#ai--machine-learning) (6)
+- [Languages & Runtimes](#languages--runtimes) (1)
+- [Infrastructure & Cloud](#infrastructure--cloud) (1)
+- [Developer Tools](#developer-tools) (2)
+- [Security](#security) (2)
 - [Industry & Community](#industry--community) (6)
 
 ## AI & Machine Learning
 
-### 1. [Revealing the details of how OpenAI agents hacked Hugging Face](https://swarmtraces.org/)
+### 1. [Gemini 4 Argon](https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-argon/)
 
-*Hacker News · 744 points · 465 comments · 2026-09-25*
+*Hacker News · 1,699 points · 1,187 comments · 2026-09-30*
 
-[Discussion](https://news.ycombinator.com/item?id=49849985)
+See also: Gemini 4 Argon (High): Intelligence, Performance and Price Analysis - https://news.ycombinator.com/item?id=49914236
 
-### 2. [There are no "rogue" AI agents](https://eoinhiggins.substack.com/p/there-are-no-rogue-ai-agents)
+[Discussion](https://news.ycombinator.com/item?id=49913571)
 
-*Hacker News · 371 points · 253 comments · 2026-09-27*
+### 2. [LeCun has "zero concerns" about AI wiping out humanity, recent "rogue" incidents](https://fortune.com/2026/10/01/ai-godfather-yann-lecun-has-zero-concerns-about-human-extinction-says-anthropic-ceo-dario-amodei-is-deuded/)
 
-[Discussion](https://news.ycombinator.com/item?id=49868083)
+*Hacker News · 405 points · 785 comments · 2026-10-03*
 
-### 3. [Ollaya – Ollama for open-source, Jev-style decision models](https://ollaya.dev/)
+https://archive.ph/TyDPf
 
-*Hacker News · 609 points · 145 comments · 2026-09-25*
+[Discussion](https://news.ycombinator.com/item?id=49946228)
 
-[Discussion](https://news.ycombinator.com/item?id=49848269)
+### 3. [Kolibri: A Sovereign Open-Weight Model](https://aleph-alpha.com/en/blog/kolibri-has-landed-a-sovereign-open-weight-model/)
 
-### 4. [Meta takes down a critical video about meta AI Glasses after filming at Meta](https://www.reddit.com/r/facebook/comments/1wotwrk/meta_takes_down_a_critical_video_about_meta_ai/)
+*Hacker News · 679 points · 330 comments · 2026-10-03*
 
-*Hacker News · 631 points · 393 comments · 2026-09-24*
+tech report: https://aleph-alpha.com/downloads/tech-report.pdf additional paper: https://tej.as/blog/aleph-alpha-kolibri
 
-[Discussion](https://news.ycombinator.com/item?id=49827794)
+[Discussion](https://news.ycombinator.com/item?id=49942706)
 
-### 5. [How to keep enjoying programming in a world of LLMs](https://discourse.haskell.org/t/how-to-keep-enjoying-programming-in-a-world-of-llms/14705)
+### 4. [Clef: Open-weight decision models, and new RL fine-tuning platform](https://blog.cloudflare.com/clef-decision-models/)
 
-*Hacker News · 332 points · 337 comments · 2026-09-26*
+*Hacker News · 636 points · 217 comments · 2026-10-01*
 
-[Discussion](https://news.ycombinator.com/item?id=49854875)
+[Discussion](https://news.ycombinator.com/item?id=49923692)
+
+### 5. [Agents don't need memory, they need documentation](https://liao.gg/blog/agents-dont-need-memory)
+
+*Hacker News · 367 points · 264 comments · 2026-10-03*
+
+[Discussion](https://news.ycombinator.com/item?id=49945933)
+
+### 6. [Niko1221/Strata: Qwen3.8-Flash-Next on any consumer hardware: one-click install for Windows / Linux. Strata inference engine, OpenAI/Anthropic API on localhost, optional image input.](https://github.com/Niko1221/Strata)
+
+*GitHub · 12,679 stars · C++ · 2026-09-24*
+
+Qwen3.8-Flash-Next on any consumer hardware: one-click install for Windows / Linux. Strata inference engine, OpenAI/Anthropic API on localhost, optional image input.
 
 ## Languages & Runtimes
 
-### 6. [Don't couple your Go code to GitHub](https://iain.rocks/blog/dont-couple-your-go-code-to-github)
+### 7. [Powerless F1 drivers frustrated by Bahrain F1 software glitch](https://www.motorsport.com/f1/news/horrible-totally-unacceptable-powerless-f1-drivers-frustrated-by-bahrain-f1-software-glitch/10861968/)
 
-*Hacker News · 270 points · 126 comments · 2026-09-27*
+*Hacker News · 241 points · 207 comments · 2026-10-05*
 
-[Discussion](https://news.ycombinator.com/item?id=49868404)
+[Discussion](https://news.ycombinator.com/item?id=49959869)
 
-### 7. [Platform-independent SIMD in Go](https://go.dev/blog/simd-experiment)
+## Infrastructure & Cloud
 
-*Hacker News · 410 points · 149 comments · 2026-09-25*
+### 8. [Cloudflare OHTTP gateway](https://blog.cloudflare.com/announcing-cloudflare-ohttp-gateway/)
 
-[Discussion](https://news.ycombinator.com/item?id=49843269)
+*Hacker News · 203 points · 95 comments · 2026-10-03*
 
-### 8. [Go Concurrency Distilled](https://antonz.org/go-concurrency-distilled/)
-
-*Hacker News · 388 points · 180 comments · 2026-09-26*
-
-[Discussion](https://news.ycombinator.com/item?id=49856988)
+[Discussion](https://news.ycombinator.com/item?id=49941091)
 
 ## Developer Tools
 
-### 9. [On caring for user data: NeoVim caused Vim undo files to be deleted](https://unsung.aresluna.org/they-had-no-concept-of-a-duty-of-care-to-their-users/)
+### 9. [Git 3.0's upcoming SHA-256 default will be a costly mistake](https://blog.gitbutler.com/git-3-sha-256)
 
-*Hacker News · 375 points · 329 comments · 2026-09-27*
+*Hacker News · 570 points · 536 comments · 2026-10-01*
 
-[Discussion](https://news.ycombinator.com/item?id=49867067)
+[Discussion](https://news.ycombinator.com/item?id=49924179)
 
-### 10. [Dutch governments builds alternative for Microsoft based on NixOS](https://www.dawo.community/en/)
+### 10. [Mike Tomlin spent 12 years building a Minecraft city](https://www.nytimes.com/athletic/7648198/2026/10/01/mike-tomlin-minecraft-nfl-coach/)
 
-*Hacker News · 1,009 points · 581 comments · 2026-09-25*
+*Hacker News · 670 points · 170 comments · 2026-10-01*
 
-[Discussion](https://news.ycombinator.com/item?id=49841563)
+https://archive.ph/Kv6yS https://www.youtube.com/watch?v=_h_pQ1-5iQg https://www.theguardian.com/sport/2026/oct/01/mike-tomlin-mi...
 
-### 11. [I'm the mom in that viral Giants clip. Let me tell you about my husband](https://themomoftheyear.substack.com/p/im-the-mom-in-that-viral-giants-clip)
-
-*Hacker News · 589 points · 236 comments · 2026-09-26*
-
-[Discussion](https://news.ycombinator.com/item?id=49857899)
+[Discussion](https://news.ycombinator.com/item?id=49925184)
 
 ## Security
 
-### 12. [U.S. appeals court upholds designation of Anthropic as supply chain risk](https://www.cnbc.com/2026/09/25/pentagon-anthropic-ai-risk-appeals-court.html)
+### 11. [Several vulnerabilities have been discovered in the Linux kernel](https://lwn.net/Articles/1097401/)
 
-*Hacker News · 496 points · 883 comments · 2026-09-25*
+*Hacker News · 576 points · 408 comments · 2026-10-01*
 
-[Discussion](https://news.ycombinator.com/item?id=49845977)
+[Discussion](https://news.ycombinator.com/item?id=49928121)
+
+### 12. [Denmark Data Breach Exposes 8.8M People's Personal Data](https://www.cpr.dk/cpr-nyt/nyhedsarkiv/2026/okt/omfattende-uautoriseret-adgang-til-borgeres-cpr-oplysninger)
+
+*Hacker News · 246 points · 203 comments · 2026-10-05*
+
+[Discussion](https://news.ycombinator.com/item?id=49962012)
 
 ## Industry & Community
 
-### 13. [When did Google get so weird?](https://sancho.bearblog.dev/google-weird/)
+### 13. [Pi 1.0](https://earendil.com/posts/pi-1-0/)
 
-*Hacker News · 1,422 points · 764 comments · 2026-09-27*
+*Hacker News · 1,684 points · 602 comments · 2026-10-01*
 
-[Discussion](https://news.ycombinator.com/item?id=49870367)
+Related: Pi Durable - https://news.ycombinator.com/item?id=49925969
 
-### 14. [Owed a billion dollars in Nvidia stock](https://colo.to/nvidia-stock-narrative.html)
+[Discussion](https://news.ycombinator.com/item?id=49926069)
 
-*Hacker News · 810 points · 339 comments · 2026-09-28*
+### 14. [Self-hosted HTTP tunnels with SSH and Nginx](https://vincent.bernat.ch/en/blog/2026-http-over-ssh)
 
-[Discussion](https://news.ycombinator.com/item?id=49872723)
+*Hacker News · 165 points · 34 comments · 2026-10-04*
 
-### 15. [PostmarketOS is rebranding as Nura](https://nura.eco/blog/2026/09/27/nura-rename/)
+[Discussion](https://news.ycombinator.com/item?id=49958569)
 
-*Hacker News · 181 points · 55 comments · 2026-09-27*
+### 15. [Turn off Apple Intelligence on macOS 27 and get its disk space back](https://github.com/omlahore/RemoveMacAI)
 
-[Discussion](https://news.ycombinator.com/item?id=49867553)
+*Hacker News · 644 points · 437 comments · 2026-10-04*
 
-### 16. [F-Droid 2.0](https://f-droid.org/2026/09/24/f-droid-2.0-a-new-chapter-for-android-freedom.html)
+[Discussion](https://news.ycombinator.com/item?id=49957116)
 
-*Hacker News · 1,461 points · 416 comments · 2026-09-24*
+### 16. [Tell HN: Bob Cringely has died](https://news.ycombinator.com/item?id=49949438)
 
-[Discussion](https://news.ycombinator.com/item?id=49831968)
+*Hacker News · 895 points · 195 comments · 2026-10-04*
 
-### 17. [Unsealed Briefs in Authors’ Case v. Microsoft/OpenAI](https://authorsguild.org/news/ag-v-openai-top-execs-knew-mass-book-piracy-was-illegal/)
+I heard from a friend of the family that Bob passed away in his sleep early Saturday. Very sad news. Bob, who's real name was Mark Stevens, was an early employee of Apple and was best known for his PBS documentaries, especially "Triumph of the Nerds". He will be missed.
 
-*Hacker News · 617 points · 605 comments · 2026-09-27*
+### 17. [Improper redaction reveals Google Data Center water and electricity usage](https://www.1011now.com/2026/09/30/more-questions-than-answers-about-lincolns-google-data-center-water-electricity-usage/)
 
-[Discussion](https://news.ycombinator.com/item?id=49863864)
+*Hacker News · 436 points · 570 comments · 2026-10-04*
 
-### 18. [Breaking Up with Google Play: Why Conversations Is Now Free](https://gultsch.de/posts/breaking-up-with-google-play/)
+[Discussion](https://news.ycombinator.com/item?id=49957068)
 
-*Hacker News · 699 points · 293 comments · 2026-09-26*
+### 18. [I quit OpenAI because its culture is broken](https://www.theatlantic.com/technology/2026/10/openai-safety-team-resignation/688881/?gift=v5U_UzUTothfWXsPxtvNVAh7esWToMRD6XnbXmc5WgA)
 
-[Discussion](https://news.ycombinator.com/item?id=49855315)
+*Hacker News · 477 points · 795 comments · 2026-10-03*
+
+https://archive.ph/5GQx8 https://www.theguardian.com/technology/2026/oct/03/openai-sa...
+
+[Discussion](https://news.ycombinator.com/item?id=49944227)
 
 ---
 
-*Generated 2026-09-28 12:26 UTC · 307 items fetched, 297 unique stories · no LLM available — headlines and excerpts only.*
+*Generated 2026-10-05 13:06 UTC · 362 items fetched, 353 unique stories · no LLM available — headlines and excerpts only.*

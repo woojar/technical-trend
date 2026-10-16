@@ -9,7 +9,7 @@ Failure policy:
 
 * ``NotConfigured`` -- skip without noise, the user simply has no key for it.
 * ``RateLimited`` -- move on immediately; on a free tier the window is hours.
-* ``Unavailable`` -- one retry with backoff, then move on.
+* ``Unavailable`` -- move on, then retried with backoff once every provider failed.
 * ``BadResponse`` -- move on; usually an unsupported ``response_format``.
 """
 
@@ -38,9 +38,14 @@ from trend.llm.openai_compat import OpenAICompatProvider
 
 log = logging.getLogger(__name__)
 
-#: Pause before the second pass. Only paid once per request, after every
-#: provider has already been tried.
-RETRY_DELAY_SECONDS = 2.0
+#: Pauses before each retry round. Only paid after every provider has already
+#: been tried, and once per round rather than once per provider.
+#:
+#: These are deliberately long. The transient failure that matters on a free
+#: tier is Gemini's "503 high demand", and a demand spike does not clear in a
+#: couple of seconds: a single 2s retry was measured to lose every batch of a
+#: run. Worst case is about a minute per request, a few minutes per digest.
+RETRY_DELAYS_SECONDS: tuple[float, ...] = (15.0, 45.0)
 
 
 def build_provider(
@@ -135,14 +140,22 @@ class Router:
             if result is not None:
                 return result
 
-        # Every provider failed. Give the transient failures one more chance
-        # rather than dropping straight to the heuristic fallback.
-        for provider in retryable:
-            log.info("llm: all providers failed; retrying %s", provider.name)
-            time.sleep(RETRY_DELAY_SECONDS)
-            result = self._attempt(provider, system, user, json_mode, errors, None)
-            if result is not None:
-                return result
+        # Every provider failed. Give the transient failures a few more chances,
+        # with growing pauses, rather than dropping straight to the heuristic
+        # fallback. A provider leaves the retry set as soon as it fails in a way
+        # that is not transient.
+        for delay in RETRY_DELAYS_SECONDS:
+            if not retryable:
+                break
+            names = ", ".join(p.name for p in retryable)
+            log.info("llm: all providers failed; retrying %s in %.0fs", names, delay)
+            time.sleep(delay)
+            still_transient: list[Provider] = []
+            for provider in retryable:
+                result = self._attempt(provider, system, user, json_mode, errors, still_transient)
+                if result is not None:
+                    return result
+            retryable = still_transient
 
         raise LLMError("all providers failed: " + "; ".join(errors))
 

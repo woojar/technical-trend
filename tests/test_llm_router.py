@@ -13,7 +13,7 @@ from trend.llm.base import (
     Unavailable,
     Unreachable,
 )
-from trend.llm.router import Router, build_provider, parse_json_loose
+from trend.llm.router import RETRY_DELAYS_SECONDS, Router, build_provider, parse_json_loose
 
 
 def test_first_configured_provider_wins() -> None:
@@ -62,6 +62,66 @@ def test_transient_error_retried_only_after_all_providers_fail(monkeypatch) -> N
     assert a.calls == 2
     # One sleep, paid once for the whole request rather than per provider.
     assert len(sleeps) == 1
+
+
+def test_transient_errors_get_several_backed_off_retries(monkeypatch) -> None:
+    """A demand spike outlasts a single short retry; keep trying with growing pauses."""
+    sleeps: list[float] = []
+    monkeypatch.setattr("trend.llm.router.time.sleep", sleeps.append)
+    a = FakeProvider("a", [Unavailable("503"), Unavailable("503"), "recovered"])
+    router = Router([a])
+
+    result = router.complete("s", "u")
+    assert result.text == "recovered"
+    assert a.calls == 3
+    assert sleeps == list(RETRY_DELAYS_SECONDS)
+    assert sleeps == sorted(sleeps) and sleeps[0] >= 10
+
+
+def test_retries_are_bounded(monkeypatch) -> None:
+    sleeps: list[float] = []
+    monkeypatch.setattr("trend.llm.router.time.sleep", sleeps.append)
+    a = FakeProvider("a", [Unavailable("503")] * 10)
+    router = Router([a])
+
+    with pytest.raises(LLMError, match="all providers failed"):
+        router.complete("s", "u")
+    assert a.calls == 1 + len(RETRY_DELAYS_SECONDS)
+    assert len(sleeps) == len(RETRY_DELAYS_SECONDS)
+
+
+def test_provider_leaves_retry_rounds_once_rate_limited(monkeypatch) -> None:
+    """503 then 429: the quota will not come back, so stop retrying and stop waiting."""
+    sleeps: list[float] = []
+    monkeypatch.setattr("trend.llm.router.time.sleep", sleeps.append)
+    a = FakeProvider("a", [Unavailable("503"), RateLimited("429"), "never"])
+    router = Router([a])
+
+    with pytest.raises(LLMError):
+        router.complete("s", "u")
+    assert a.calls == 2
+    assert len(sleeps) == 1
+    assert not router.has_available
+
+
+def test_overloaded_pinned_and_exhausted_alias_recovers_on_retry(monkeypatch) -> None:
+    """The failure seen in production: pinned slug 503s, alias has one request of quota.
+
+    With a single short retry every batch fell back to headlines. The backed-off
+    retries must let the pinned model serve later batches once demand eases.
+    """
+    monkeypatch.setattr("trend.llm.router.time.sleep", lambda _: None)
+    pinned = FakeProvider(
+        "gemini", [Unavailable("503"), Unavailable("503"), Unavailable("503"), "batch 2"]
+    )
+    alias = FakeProvider("gemini-latest", ["batch 1", RateLimited("429")])
+    router = Router([pinned, alias])
+
+    assert router.complete("s", "u").provider == "gemini-latest"
+    # Alias quota is gone; batch 2 depends on retrying the pinned model.
+    result = router.complete("s", "u")
+    assert result.provider == "gemini"
+    assert result.text == "batch 2"
 
 
 def test_rate_limited_provider_is_never_retried(monkeypatch) -> None:

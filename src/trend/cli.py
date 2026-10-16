@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import logging
+import os
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
@@ -40,6 +41,21 @@ def _setup_logging(verbose: bool) -> None:
         logging.getLogger(noisy).setLevel(logging.WARNING)
 
 
+def _set_step_output(name: str, value: str) -> None:
+    """Expose ``name=value`` to later GitHub Actions steps; no-op elsewhere.
+
+    The weekly workflow uses this to fail the run *after* committing a degraded
+    digest. Degraded mode deliberately still publishes, which also means the run
+    stays green, and a green run is how three weeks of unsummarized issues went
+    unnoticed. A red run gets the repository owner an email.
+    """
+    path = os.environ.get("GITHUB_OUTPUT")
+    if not path:
+        return
+    with open(path, "a", encoding="utf-8") as fh:
+        fh.write(f"{name}={value}\n")
+
+
 def cmd_weekly(args: argparse.Namespace) -> int:
     cfg = load_config(args.config, root=args.root)
     digest = build_digest(cfg, dry_run=args.dry_run)
@@ -59,6 +75,7 @@ def cmd_weekly(args: argparse.Namespace) -> int:
 
     path = write_digest(digest, cfg)
     print(f"Wrote {path} ({len(digest.entries)} stories)")
+    _set_step_output("llm_provider", digest.provider)
 
     if not digest.provider:
         log.warning("digest generated without an LLM; set GEMINI_API_KEY or another provider key")

@@ -35,10 +35,15 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # Do not publish off a failed digest run.
+    # A weekly run that produced a degraded digest is deliberately marked as
+    # failed (to alert the owner) after the digest is committed, so "failure"
+    # must still publish. That is safe in general: this job builds only what is
+    # already committed on main, so a run that failed before committing just
+    # redeploys the existing site. Skip only cancelled or otherwise odd runs.
     if: >-
       github.event_name != 'workflow_run' ||
-      github.event.workflow_run.conclusion == 'success'
+      github.event.workflow_run.conclusion == 'success' ||
+      github.event.workflow_run.conclusion == 'failure'
     steps:
       # For a workflow_run event the default checkout ref is the commit that
       # started the triggering run, which predates the digest it committed.

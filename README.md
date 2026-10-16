@@ -108,7 +108,7 @@ one. For a source needing real logic, implement the `Source` protocol in
 ## Automation
 
 [`.github/workflows/weekly.yml`](.github/workflows/weekly.yml) runs every Monday
-at 06:00 UTC, commits the new digest, and can be triggered manually from the
+at 01:00 UTC, commits the new digest, and can be triggered manually from the
 Actions tab.
 
 To enable it: add your provider key under **Settings → Secrets and variables →
@@ -176,11 +176,16 @@ job that quietly stops publishing is worse than one that publishes something
 plainer, and a digest that looks normal but was built without a model would be
 worse still.
 
+In Actions, a degraded run is still committed and deployed, but its last step
+fails on purpose so the run shows red and GitHub emails you. Before a provider
+counts as failed, the router retries temporary errors (such as Gemini's "503
+high demand") with 15s and then 45s pauses.
+
 ## Development
 
 ```bash
 uv sync                     # includes dev dependencies
-uv run pytest               # 182 tests, no network access
+uv run pytest               # 201 tests, no network access
 uv run ruff check .
 uv run ruff format .
 ```

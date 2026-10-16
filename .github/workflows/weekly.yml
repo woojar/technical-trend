@@ -2,9 +2,11 @@ name: Weekly digest
 
 on:
   schedule:
-    # Mondays 06:00 UTC. GitHub queues cron jobs under load, so treat the time
-    # as approximate.
-    - cron: "0 6 * * 1"
+    # Mondays 01:00 UTC. GitHub queues cron jobs under load, and in practice
+    # this one has started 5-8 hours late. Scheduled at 06:00 that put the LLM
+    # calls in US morning, Gemini's busiest window, where the free tier answers
+    # "503 high demand". Starting earlier keeps even a late run clear of it.
+    - cron: "0 1 * * 1"
   workflow_dispatch:
     inputs:
       dry_run:
@@ -49,6 +51,7 @@ jobs:
           restore-keys: trend-state-
 
       - name: Generate digest
+        id: digest
         env:
           # Set whichever you have in Settings > Secrets and variables > Actions.
           # Missing keys are skipped; with none set the digest still builds from
@@ -91,3 +94,17 @@ jobs:
           name: digest
           path: digests/
           if-no-files-found: warn
+
+      # Degraded mode publishes a plainer digest instead of failing, which is
+      # the right call for readers but leaves the run green, and a green run is
+      # how several weeks of unsummarized issues went unnoticed. Fail here, after
+      # the digest is committed and uploaded, so the issue still goes out and the
+      # repository owner still gets a failed-run email.
+      - name: Fail if no LLM summarized the digest
+        if: ${{ steps.digest.outcome == 'success' && steps.digest.outputs.llm_provider == '' }}
+        run: |
+          msg="No LLM provider answered; this week's digest is headlines and excerpts only. See the 'llm:' warnings in the Generate digest step."
+          echo "::error title=Digest degraded::${msg}"
+          echo "### Digest degraded" >> "$GITHUB_STEP_SUMMARY"
+          echo "${msg}" >> "$GITHUB_STEP_SUMMARY"
+          exit 1

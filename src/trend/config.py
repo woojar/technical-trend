@@ -46,14 +46,15 @@ DEFAULT_LLM_CHAIN: list[dict[str, Any]] = [
         "provider": "openai_compat",
         "name": "groq",
         "base_url": "https://api.groq.com/openai/v1",
-        "model": "llama-3.3-70b-versatile",
+        "model": "openai/gpt-oss-120b",
         "api_key_env": "GROQ_API_KEY",
     },
     {
         "provider": "openai_compat",
         "name": "openrouter",
         "base_url": "https://openrouter.ai/api/v1",
-        "model": "meta-llama/llama-3.3-70b-instruct:free",
+        "model": "nvidia/nemotron-3.5-super-vl:free",
+        "max_tokens": 8192,
         "api_key_env": "OPENROUTER_API_KEY",
     },
     {

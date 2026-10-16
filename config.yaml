@@ -47,25 +47,35 @@ llm:
     # Same key, alias that tracks the current Flash model. Only reached if the
     # pinned slug above is retired or overloaded, so its tight free-tier quota
     # does not matter here.
-    - provider: gemini
-      name: gemini-latest
-      model: gemini-flash-latest
-      api_key_env: GEMINI_API_KEY
+    # - provider: gemini
+    #   name: gemini-latest
+    #   model: gemini-flash-latest
+    #   api_key_env: GEMINI_API_KEY
 
     # Very fast, generous free tier. https://console.groq.com/keys
-    # Slug unverified; current list at https://console.groq.com/docs/models
+    # Verified 2026-10 (llama-3.3-70b-versatile was retired). Current list:
+    # https://console.groq.com/docs/models
     - provider: openai_compat
       name: groq
       base_url: https://api.groq.com/openai/v1
-      model: llama-3.3-70b-versatile
+      model: openai/gpt-oss-120b
       api_key_env: GROQ_API_KEY
 
     # Aggregator with genuinely free model slugs (the ":free" suffix).
     # https://openrouter.ai/keys -- free models: openrouter.ai/models?max_price=0
+    # Free keys get 50 requests/day across all ":free" models; a run uses ~4.
+    #
+    # Verified 2026-10 against a real 12-item batch (llama-3.3-70b-instruct:free
+    # is no longer listed). Nemotron 3.5 Super returned 12/12 valid entries in
+    # ~14s, but needs max_tokens raised: at the default 4096 it truncates the
+    # JSON mid-batch. Rejected: gemma-4-*-it:free (upstream 429 on every try),
+    # dots-3-note-preview:free (empty completion), nemotron-3-super-120b:free
+    # (valid but 160-230s per batch, too slow for the job's 20-minute timeout).
     - provider: openai_compat
       name: openrouter
       base_url: https://openrouter.ai/api/v1
-      model: meta-llama/llama-3.3-70b-instruct:free
+      model: nvidia/nemotron-3.5-super-vl:free
+      max_tokens: 8192
       api_key_env: OPENROUTER_API_KEY
 
     # https://cloud.cerebras.ai
